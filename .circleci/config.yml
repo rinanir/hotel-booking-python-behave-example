@@ -1,0 +1,30 @@
+version: 2.0
+
+jobs:
+  test:
+    docker:
+      - image: circleci/python:3.8-buster
+      - image: hindsightsoftware/hotel-booking:latest
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install Dependencies
+          command: |
+            python3 -m pip install -r requirements.txt
+      - run:
+          name: Wait for Backend connection
+          command: |
+            TIMEOUT=6
+            until [ "$(curl --write-out %{http_code} --silent --output /dev/null http://localhost:8080/)" -eq 200 ] || [ $TIMEOUT -eq 0 ]; do echo "Waiting for port 8080, timeout: $((TIMEOUT--))"; sleep 10; done
+            if [[ "$TIMEOUT" -eq 0 ]]; then exit 1; fi
+      - run:
+          name: Cucumber Tests
+          command: |
+            python3 -m behave -f json.pretty -o reports/cucumber.json
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - test
