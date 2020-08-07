@@ -12,14 +12,17 @@ def get_token():
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
-    response = requests.post('http://localhost:8080/login', json=body, headers=headers)
+    response = requests.post(
+        'http://localhost:8080/login', json=body, headers=headers)
     json = response.json()
     return json['token']
+
 
 request_body = None
 response = None
 last_booking_id = None
-    
+
+
 @given(u'a user wants to make a booking with the following details')
 def step_given_a_user_wants_to_make_a_booking(context):
     global request_body
@@ -29,12 +32,12 @@ def step_given_a_user_wants_to_make_a_booking(context):
         'lastname': row[1],
         'totalprice': row[2],
         'depositpaid': row[3],
-        'bookingdates' : {
+        'bookingdates': {
             'checkin': row[4],
             'checkout': row[5],
         },
         'additionalneeds': row[6]
-    } 
+    }
 
 
 @when(u'the booking is submitted by the user')
@@ -45,7 +48,8 @@ def step_when_the_booking_is_submitted(context):
         'Accept': 'application/json',
         'Authorization': f'Bearer {get_token()}'
     }
-    response = requests.post('http://localhost:8080/api/booking', json=request_body, headers=headers)
+    response = requests.post(
+        'http://localhost:8080/api/booking', json=request_body, headers=headers)
 
 
 @then(u'the booking is successfully stored')
@@ -68,7 +72,7 @@ def step_given_hotel_has_existing_booking(context):
         'lastname': 'boylu',
         'totalprice': 20,
         'depositpaid': 'true',
-        'bookingdates' : {
+        'bookingdates': {
             'checkin': '2020-07-2',
             'checkout': '2020-07-2',
         },
@@ -80,7 +84,8 @@ def step_given_hotel_has_existing_booking(context):
         'Accept': 'application/json',
         'Authorization': f'Bearer {get_token()}'
     }
-    response = requests.post('http://localhost:8080/api/booking', json=request_body, headers=headers)
+    response = requests.post(
+        'http://localhost:8080/api/booking', json=request_body, headers=headers)
     assert_that(response.status_code, equal_to(200))
 
     global last_booking_id
@@ -97,10 +102,12 @@ def step_a_specific_booking_is_requested_by_the_user(context):
         'Accept': 'application/json',
         'Authorization': f'Bearer {get_token()}'
     }
-    
-    response = requests.get('http://localhost:8080/api/booking/' + str(last_booking_id), headers=headers)
+
+    response = requests.get(
+        f'http://localhost:8080/api/booking/{last_booking_id}', headers=headers)
 
     assert_that(response.status_code, equal_to(200))
+
 
 @then(u'the booking is shown')
 def step_then_the_booking_is_sown(context):
@@ -116,6 +123,7 @@ def step_then_the_booking_is_sown(context):
     assert_that(json['bookingdates'], has_key('checkin'))
     assert_that(json['bookingdates'], has_key('checkout'))
 
+
 @when(u'a specific booking is updated by the user')
 def step_when_a_specific_booking_is_updated(context):
     global request_body
@@ -124,7 +132,7 @@ def step_when_a_specific_booking_is_updated(context):
         'lastname': 'Novak',
         'totalprice': 20,
         'depositpaid': 'true',
-        'bookingdates' : {
+        'bookingdates': {
             'checkin': '2020-07-2',
             'checkout': '2020-07-2',
         },
@@ -136,8 +144,10 @@ def step_when_a_specific_booking_is_updated(context):
         'Accept': 'application/json',
         'Authorization': f'Bearer {get_token()}'
     }
-    response = requests.put('http://localhost:8080/api/booking/' + str(last_booking_id), json=request_body, headers=headers)
+    response = requests.put(
+        f'http://localhost:8080/api/booking/{last_booking_id}', json=request_body, headers=headers)
     assert_that(response.status_code, equal_to(200))
+
 
 @then(u'the booking is shown to be updated')
 def step_then_the_booking_is_shown_to_be_updated(context):
@@ -157,8 +167,10 @@ def step_when_a_specific_booking_is_deleted(context):
         'Accept': 'application/json',
         'Authorization': f'Bearer {get_token()}'
     }
-    response = requests.delete('http://localhost:8080/api/booking/' + str(last_booking_id), headers=headers)
+    response = requests.delete(
+        f'http://localhost:8080/api/booking/{last_booking_id}', headers=headers)
     assert_that(response.status_code, equal_to(200))
+
 
 @then(u'the booking is removed')
 def step_the_booking_is_removed(context):
@@ -168,6 +180,7 @@ def step_the_booking_is_removed(context):
         'Accept': 'application/json',
         'Authorization': f'Bearer {get_token()}'
     }
-    
-    response = requests.get('http://localhost:8080/api/booking/' + str(last_booking_id), headers=headers)
+
+    response = requests.get(
+        f'http://localhost:8080/api/booking/{last_booking_id}', headers=headers)
     assert_that(response.status_code, equal_to(404))
