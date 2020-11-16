@@ -1,8 +1,9 @@
 Feature: Hotel Booking
 
+  @HOTEL-1 @OPEN
   Scenario: Create a booking in Hotel Booking
     Given a user wants to make a booking with the following details
-      | firstname | lastname | price | paid | from       | to         | needs     |  
+      | firstname | lastname | price | paid | from       | to         | needs     |
       | Mark      | Winters  | 120   | true | 2018-01-01 | 2018-01-03 | Breakfast |
     When the booking is submitted by the user
     Then the booking is successfully stored
