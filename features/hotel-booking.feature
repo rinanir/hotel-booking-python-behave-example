@@ -9,6 +9,7 @@ Feature: Hotel Booking
     Then the booking is successfully stored
     And shown to the user as stored
 
+  @HOTEL-2 @OPEN
   Scenario: Retrieve a booking in Hotel Booking
     Given Hotel Booking has existing bookings
     When a specific booking is requested by the user
